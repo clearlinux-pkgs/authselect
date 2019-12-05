@@ -4,7 +4,7 @@
 #
 Name     : authselect
 Version  : 1.0.2
-Release  : 4
+Release  : 5
 URL      : https://github.com/pbrezina/authselect/archive/1.0.2.tar.gz
 Source0  : https://github.com/pbrezina/authselect/archive/1.0.2.tar.gz
 Summary  : Select system authentication and identity sources.
