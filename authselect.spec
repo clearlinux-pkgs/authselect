@@ -4,7 +4,7 @@
 #
 Name     : authselect
 Version  : 1.0.2
-Release  : 6
+Release  : 7
 URL      : https://github.com/pbrezina/authselect/archive/1.0.2.tar.gz
 Source0  : https://github.com/pbrezina/authselect/archive/1.0.2.tar.gz
 Summary  : Select system authentication and identity sources.
@@ -22,8 +22,10 @@ BuildRequires : popt-dev
 BuildRequires : sed
 
 %description
-Enable winbind for system authentication
-========================================
+Enable NIS for system authentication
+====================================
+Selecting this profile will enable Network Information Services as the source
+of identity and authentication providers.
 
 %package bin
 Summary: bin components for the authselect package.
@@ -50,6 +52,8 @@ Requires: authselect-lib = %{version}-%{release}
 Requires: authselect-bin = %{version}-%{release}
 Requires: authselect-data = %{version}-%{release}
 Provides: authselect-devel = %{version}-%{release}
+Requires: authselect = %{version}-%{release}
+Requires: authselect = %{version}-%{release}
 
 %description dev
 dev components for the authselect package.
@@ -109,37 +113,45 @@ python3 components for the authselect package.
 
 %prep
 %setup -q -n authselect-1.0.2
+cd %{_builddir}/authselect-1.0.2
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1550089407
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1582847975
+# -Werror is for werrorists
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$CFLAGS -fno-lto "
+export FFLAGS="$CFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
 %reconfigure --disable-static
 make  %{?_smp_mflags}
 
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
-export SOURCE_DATE_EPOCH=1550089407
+export SOURCE_DATE_EPOCH=1582847975
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/authselect
-cp COPYING %{buildroot}/usr/share/package-licenses/authselect/COPYING
+cp %{_builddir}/authselect-1.0.2/COPYING %{buildroot}/usr/share/package-licenses/authselect/8624bcdae55baeef00cd11d5dfcfa60f68710a02
 %make_install
 %find_lang authselect
+## Remove excluded files
+rm -f %{buildroot}/usr/bin/authconfig
 
 %files
 %defattr(-,root,root,-)
 
 %files bin
 %defattr(-,root,root,-)
-%exclude /usr/bin/authconfig
 /usr/bin/authselect
 
 %files data
@@ -175,7 +187,7 @@ cp COPYING %{buildroot}/usr/share/package-licenses/authselect/COPYING
 
 %files dev
 %defattr(-,root,root,-)
-/usr/include/*.h
+/usr/include/authselect.h
 /usr/lib64/libauthselect.so
 /usr/lib64/pkgconfig/authselect.pc
 
@@ -190,7 +202,7 @@ cp COPYING %{buildroot}/usr/share/package-licenses/authselect/COPYING
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/authselect/COPYING
+/usr/share/package-licenses/authselect/8624bcdae55baeef00cd11d5dfcfa60f68710a02
 
 %files python
 %defattr(-,root,root,-)
